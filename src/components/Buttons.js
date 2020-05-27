@@ -18,9 +18,9 @@ class Buttons extends React.Component {
             <button value="1" onClick={this.props.handleNumber}>1</button>
             <button value="2" onClick={this.props.handleNumber}>2</button>
             <button value="3" onClick={this.props.handleNumber}>3</button>
-            <button value="backSpace" onClick={this.props.handleClick}>←Back</button>
-            <button className="wideButton" value="0" onClick={this.props.handleClick}>0</button>
-            <button value="." onClick={this.props.handleClick}>.</button>
+            <button value="backSpace" onClick={this.props.handleBackSpace}>←</button>
+            <button className="wideButton" value="0" onClick={this.props.handleZero}>0</button>
+            <button value="." onClick={this.props.handleDot}>.</button>
             <button value="=" onClick={this.props.handleEval}>=</button>
         </div>
         )

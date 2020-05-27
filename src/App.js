@@ -2,90 +2,124 @@ import React from 'react';
 import './App.css';
 import Buttons from './components/Buttons.js'
 
-const numRegex = /[0-9]/
-const signRegex = /[*+/-]/
-
 class Calculator extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      message: [],
-      results: []
+      message: '',
+      result: '0',
+      init: true,
+      eval: false
     }
     //Bind methods here
-    this.handleClick = this.handleClick.bind(this);
-    this.handleClear = this.handleClear.bind(this);
-    this.handleEval  = this.handleEval.bind(this);
-    this.handleNumber = this.handleNumber.bind(this);
+    this.handleClick =     this.handleClick.bind(this);
+    this.handleClear =     this.handleClear.bind(this);
+    this.handleEval  =     this.handleEval.bind(this);
+    this.handleNumber =    this.handleNumber.bind(this);
+    this.handleDot =       this.handleDot.bind(this);
+    this.handleBackSpace = this.handleBackSpace.bind(this);
+    this.handleZero =      this.handleZero.bind(this);
+  }
+  handleZero(){
+    if(this.state.result !== '0' && this.state.eval === false){
+      this.setState({
+        result: this.state.result+'0'
+      })
+    }
+    else{
+      this.setState({
+        result: '0',
+        eval: false
+      })
+    }
+  }
+  handleBackSpace(){
+    if(this.state.result.length === 1){
+      this.setState({result: '0'})
+    }
+    else if(this.state.result.length > 1){
+      this.setState({result: this.state.result.slice(0, -1)})
+    }
   }
   handleClear() {
     this.setState({
-      message: [],
-      results: []
+      message: '',
+      result: '0',
+      init: true
     })
   }
+  handleDot() {
+    if(!this.state.result.includes('.') && this.state.eval === false){
+      this.setState({result: this.state.result+'.'})
+    }
+  }
   handleClick(event) {
-    if (event.target.value === "backSpace") {
+    if(!this.state.init && this.state.message){
       this.setState({
-          message: this.state.message.slice(0, -1)
+        message: this.state.message + this.state.result + event.target.value,
+        result: '0',
+        init: true
       })
     }
-    else if (this.state.message.includes(".") && event.target.value === ".") {
-      //Do nothing when decimal is already present and next keyClick is decimal again
-    }
-    else if (!this.state.message.includes("=")){
+    else if(!this.state.init && !this.state.message){
       this.setState({
-          message: this.state.message.concat(event.target.value)
-        })
-    }
-    else if (this.state.message.includes("=") && !numRegex.test(event.target.value)){
-      this.setState({
-          message: this.state.results.slice(-1).concat(event.target.value),
-          results: []
+        message: this.state.result + event.target.value,
+        result: '0',
+        init: true
       })
     }
-    else {
+    else if(this.state.init){
       this.setState({
-          message: [].concat(event.target.value),
-          results: []
+        message: this.state.message.slice(0, -1) + event.target.value
       })
     }
   }
   handleNumber(event) {
-    let number = Number(event.target.value)
-    this.setState({
-      message: this.state.message.concat(number)
-    })
-  }
-  handleEval() {
-    if(this.state.message.includes('=')){
-      alert('Do not press = without entering number or +-*/')
-    }
-    else if(numRegex.test(this.state.message.slice(-1))){
-      let sum = eval(this.state.message.join(""))
-      
+    if(this.state.eval === true){
       this.setState({
-        message: this.state.message.concat('=').concat(sum),
-        results: this.state.results.concat(sum)
+        result: event.target.value,
+        init: false,
+        eval: false
       })
-      console.log(this.state.message)
     }
     else{
-      alert('incorrect input, will not evaluate!')
+      if(this.state.result === '0'){
+        this.setState({
+          result: event.target.value,
+          init: false
+        })
+      }
+      else{
+        this.setState({
+          result: this.state.result+event.target.value,
+          init: false
+        })
+      }
     }
-    
+  }
+  handleEval() {
+    if(this.state.message){
+      this.setState({
+        result: eval(this.state.message+this.state.result).toString(),
+        message: '',
+        eval: true
+      })
+    }
   }
   render() {
-    console.log(this.state.message, this.state.results)
+    
     return (
       <div className="calculator">
         <h1>{this.state.message}</h1>
-        <h1>{this.state.results[this.state.results.length-1]}</h1>
-        <Buttons 
+        <h1>{this.state.result}</h1>
+        <Buttons
+          handleZero={this.handleZero}
           handleNumber={this.handleNumber}
           handleClick={this.handleClick} 
           handleClear={this.handleClear}
-          handleEval ={this.handleEval}/>
+          handleEval={this.handleEval}
+          handleDot={this.handleDot}
+          handleBackSpace={this.handleBackSpace}/>
         <p className='bottomCaption'>Coded by Codey Du! 2019 November 21st</p>
       </div>
     )
